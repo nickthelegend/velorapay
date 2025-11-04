@@ -126,11 +126,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented wallet balance tracking and top-up functionality with transaction records"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: Wallet top-up functionality working correctly. Balance updates properly, transaction records created, negative/zero amounts rejected. Balance persistence verified across API calls."
 
   - task: "Send Money Transaction"
     implemented: true
