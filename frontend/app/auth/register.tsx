@@ -83,14 +83,15 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Choose a username"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
               placeholderTextColor="#666"
               autoCapitalize="none"
+              keyboardType="email-address"
               editable={!loading}
             />
           </View>
