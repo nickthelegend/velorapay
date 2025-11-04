@@ -111,11 +111,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented JWT-based auth with bcrypt password hashing, register and login endpoints"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: All authentication tests successful. Register creates users with 1000 USDC starting balance, login returns JWT tokens, duplicate username rejection works, invalid credentials properly rejected. JWT token validation working correctly."
 
   - task: "Wallet Management (Balance, Top-up)"
     implemented: true
