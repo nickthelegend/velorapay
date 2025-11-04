@@ -277,8 +277,34 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Supabase Authentication Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Migrated authentication from JWT to Supabase. Implemented JWT validation for Supabase tokens, user sync endpoint, and OAuth support for Google and GitHub."
+
+  - task: "expo-camera Installation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/scan-qr.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Installed expo-camera package and fixed the missing import issue in scan-qr.tsx"
+
 agent_communication:
   - agent: "main"
     message: "Initial VeloraPay MVP implementation complete. All backend APIs and frontend screens implemented with proper authentication, wallet management, send/receive functionality, transaction history, and reputation system. Ready for comprehensive backend testing."
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All 5 backend tasks tested successfully. 23/23 tests passed. Fixed minor bug in transaction history (topup type classification). All core functionality working: authentication, wallet management, money transfers, transaction history, user profiles. Backend APIs are production-ready."
+  - agent: "main"
+    message: "MAJOR UPDATE: Migrated from JWT authentication to Supabase authentication with Google and GitHub OAuth support. Frontend updated with new login screen supporting email/password and social login. Backend updated to validate Supabase JWT tokens. Camera functionality fixed. Ready for testing."
