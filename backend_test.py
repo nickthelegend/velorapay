@@ -29,17 +29,19 @@ class VeloraPayTester:
         self.api_url = f"{self.base_url}/api"
         print(f"🔗 Testing backend at: {self.api_url}")
         
-        # Test data
+        # Test data - use timestamp to ensure unique usernames
+        import time
+        timestamp = str(int(time.time()))
         self.user1_data = {
-            "username": "alice_smith",
+            "username": f"alice_test_{timestamp}",
             "password": "SecurePass123!",
-            "full_name": "Alice Smith"
+            "full_name": "Alice Test User"
         }
         
         self.user2_data = {
-            "username": "bob_johnson", 
+            "username": f"bob_test_{timestamp}", 
             "password": "MyPassword456!",
-            "full_name": "Bob Johnson"
+            "full_name": "Bob Test User"
         }
         
         # Store tokens and user info
