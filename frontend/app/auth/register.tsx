@@ -15,7 +15,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function RegisterScreen() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,7 +24,7 @@ export default function RegisterScreen() {
   const { register } = useAuth();
 
   const handleRegister = async () => {
-    if (!username || !fullName || !password || !confirmPassword) {
+    if (!email || !fullName || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -41,8 +41,8 @@ export default function RegisterScreen() {
 
     setLoading(true);
     try {
-      await register(username, password, fullName);
-      Alert.alert('Success', 'Account created successfully! You get 1000 USDC as a welcome bonus.', [
+      await register(email, password, fullName);
+      Alert.alert('Success', 'Account created successfully! Please check your email to verify your account.', [
         { text: 'OK', onPress: () => router.replace('/(tabs)/dashboard') },
       ]);
     } catch (error: any) {
