@@ -265,6 +265,30 @@ frontend:
         agent: "main"
         comment: "Implemented bottom tab navigation with VeloraPay design system colors"
 
+  - task: "Supabase Authentication Frontend"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/contexts/AuthContext.tsx, /app/frontend/app/auth/login.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Migrated AuthContext to use Supabase. Updated login screen with email/password and OAuth buttons for Google and GitHub. Register screen updated to use email instead of username."
+
+  - task: "QR Code Scanner Fix"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/scan-qr.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Installed expo-camera package and added missing ActivityIndicator import to fix the scan-qr screen."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
