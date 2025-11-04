@@ -141,11 +141,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented send money endpoint with balance validation, recipient search, and transaction logging"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: Send money functionality working perfectly. Balance updates for both sender and recipient, transaction records created, insufficient balance rejection, invalid recipient rejection, send-to-self prevention all working correctly."
 
   - task: "Transaction History"
     implemented: true
