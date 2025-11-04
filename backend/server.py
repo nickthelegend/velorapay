@@ -303,7 +303,11 @@ async def get_transaction_history(current_user: dict = Depends(get_current_user)
         if txn["from_user"] == user_id:
             txn_type = "send" if txn["type"] != "topup" else "topup"
         else:
-            txn_type = "receive"
+            # Check if it's a topup from system
+            if txn["from_user"] == "system" and txn["type"] == "topup":
+                txn_type = "topup"
+            else:
+                txn_type = "receive"
         
         result.append({
             "id": str(txn["_id"]),
