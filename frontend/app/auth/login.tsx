@@ -249,4 +249,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#333',
+  },
+  dividerText: {
+    color: '#A0A0A0',
+    fontSize: 14,
+    marginHorizontal: 16,
+  },
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  googleButton: {
+    backgroundColor: '#4285F4',
+  },
+  githubButton: {
+    backgroundColor: '#333',
+  },
+  socialButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
 });
