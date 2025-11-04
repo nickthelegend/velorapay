@@ -32,11 +32,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="send"
+        name="cards"
         options={{
-          title: 'Send',
+          title: 'My Cards',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="arrow-up-circle" size={size} color={color} />
+            <Ionicons name="card" size={size} color={color} />
           ),
         }}
       />

@@ -14,12 +14,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function DashboardScreen() {
   const { user, token, refreshUser } = useAuth();
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
@@ -96,17 +98,17 @@ export default function DashboardScreen() {
 
         {/* Wallet Card */}
         <View style={styles.walletCard}>
-          <View style={styles.walletHeader}>
-            <View>
+          <View style={styles.walletContent}>
+            <View style={styles.walletBalanceSection}>
               <Text style={styles.walletLabel}>USDC Balance</Text>
               <Text style={styles.walletBalance}>{user?.wallet_balance.toFixed(2)} USDC</Text>
               <Text style={styles.walletSubtext}>≈ ₹ {usdToInr(user?.wallet_balance || 0)}</Text>
             </View>
-            <TouchableOpacity style={styles.topUpButton} onPress={() => setShowTopUpModal(true)}>
-              <Ionicons name="add-circle" size={24} color="#000" />
-              <Text style={styles.topUpButtonText}>Top-Up</Text>
-            </TouchableOpacity>
           </View>
+          <TouchableOpacity style={styles.topUpButton} onPress={() => setShowTopUpModal(true)}>
+            <Ionicons name="add-circle" size={20} color="#000" />
+            <Text style={styles.topUpButtonText}>Top-Up</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Reputation Card */}
@@ -132,17 +134,23 @@ export default function DashboardScreen() {
         <View style={styles.quickActions}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => router.push('/send')}
+            >
               <View style={styles.actionIconContainer}>
                 <Ionicons name="arrow-up" size={28} color="#06CD92" />
               </View>
               <Text style={styles.actionText}>Send Money</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => router.push('/(tabs)/cards')}
+            >
               <View style={styles.actionIconContainer}>
-                <Ionicons name="arrow-down" size={28} color="#06CD92" />
+                <Ionicons name="card" size={28} color="#06CD92" />
               </View>
-              <Text style={styles.actionText}>Request</Text>
+              <Text style={styles.actionText}>My Cards</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard}>
               <View style={styles.actionIconContainer}>
@@ -150,7 +158,10 @@ export default function DashboardScreen() {
               </View>
               <Text style={styles.actionText}>Exchange</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => router.push('/scan-qr')}
+            >
               <View style={styles.actionIconContainer}>
                 <Ionicons name="qr-code" size={28} color="#06CD92" />
               </View>
@@ -268,10 +279,11 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  walletHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  walletContent: {
+    marginBottom: 16,
+  },
+  walletBalanceSection: {
+    alignItems: 'flex-start',
   },
   walletLabel: {
     fontSize: 12,
@@ -294,14 +306,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#06CD92',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 12,
     gap: 8,
   },
   topUpButtonText: {
     color: '#000',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '700',
   },
   reputationCard: {
