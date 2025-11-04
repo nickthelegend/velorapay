@@ -171,11 +171,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented user profile endpoint with reputation score tracking"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: User profile and search functionality working correctly. Profile returns complete user data including wallet balance and reputation score. User search works for existing users and properly rejects non-existent users."
 
 frontend:
   - task: "Authentication Screens (Login/Register)"
