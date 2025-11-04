@@ -156,11 +156,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented transaction history endpoint with user-specific filtering and sorting"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: Transaction history working correctly. Shows all user transactions (send, receive, topup), proper sorting by timestamp (newest first), correct transaction type classification. Fixed minor bug in topup transaction type display."
 
   - task: "User Profile & Reputation"
     implemented: true
