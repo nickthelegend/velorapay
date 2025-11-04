@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build VeloraPay - a premium fintech mobile payment app with black/green design, wallet management, send/receive money, transaction history, reputation system, and JWT authentication"
+user_problem_statement: "Build VeloraPay - a premium fintech mobile payment app with black/green design, wallet management, send/receive money, transaction history, reputation system, and Supabase authentication with Google and GitHub OAuth"
 
 backend:
   - task: "User Authentication (Register/Login)"
