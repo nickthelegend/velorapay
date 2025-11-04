@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
+import { supabase } from '../lib/supabase';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -13,10 +14,14 @@ interface User {
 }
 
 interface AuthContextType {
+  session: Session | null;
+  supabaseUser: SupabaseUser | null;
   user: User | null;
   token: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string, fullName: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGitHub: () => Promise<void>;
+  register: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   loading: boolean;
@@ -25,93 +30,141 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStoredAuth();
+    // Initialize authentication
+    initializeAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event);
+        setSession(session);
+        setSupabaseUser(session?.user || null);
+        setToken(session?.access_token || null);
+
+        if (session?.user) {
+          await syncUserWithBackend(session);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
-  const loadStoredAuth = async () => {
+  const initializeAuth = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem('authToken');
-      const storedUser = await AsyncStorage.getItem('user');
-      
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setSupabaseUser(session?.user || null);
+      setToken(session?.access_token || null);
+
+      if (session) {
+        await syncUserWithBackend(session);
       }
     } catch (error) {
-      console.error('Error loading auth:', error);
+      console.error('Error initializing auth:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (username: string, password: string) => {
+  const syncUserWithBackend = async (session: Session) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      // First, sync user with backend
+      const syncResponse = await fetch(`${API_URL}/api/users/sync`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Login failed');
+      if (syncResponse.ok) {
+        // Then fetch user profile from backend
+        await refreshUser();
       }
-
-      await AsyncStorage.setItem('authToken', data.access_token);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
-      
-      setToken(data.access_token);
-      setUser(data.user);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Error syncing user with backend:', error);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (data.session) {
+      await syncUserWithBackend(data.session);
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${API_URL}/auth/callback`,
+      },
+    });
+
+    if (error) {
       throw error;
     }
   };
 
-  const register = async (username: string, password: string, fullName: string) => {
-    try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password, full_name: fullName }),
-      });
+  const loginWithGitHub = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${API_URL}/auth/callback`,
+      },
+    });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Registration failed');
-      }
-
-      await AsyncStorage.setItem('authToken', data.access_token);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
-      
-      setToken(data.access_token);
-      setUser(data.user);
-    } catch (error) {
-      console.error('Registration error:', error);
+    if (error) {
       throw error;
+    }
+  };
+
+  const register = async (email: string, password: string, fullName: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (data.session) {
+      await syncUserWithBackend(data.session);
     }
   };
 
   const logout = async () => {
-    try {
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('user');
-      setToken(null);
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await supabase.auth.signOut();
+    setSession(null);
+    setSupabaseUser(null);
+    setUser(null);
+    setToken(null);
   };
 
   const refreshUser = async () => {
@@ -127,16 +180,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const updatedUser = {
+        setUser({
           id: data.id,
           username: data.username,
           full_name: data.full_name,
           wallet_balance: data.wallet_balance,
           reputation_score: data.reputation_score,
-        };
-        
-        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        });
       }
     } catch (error) {
       console.error('Refresh user error:', error);
@@ -144,7 +194,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, refreshUser, loading }}>
+    <AuthContext.Provider
+      value={{
+        session,
+        supabaseUser,
+        user,
+        token,
+        login,
+        loginWithGoogle,
+        loginWithGitHub,
+        register,
+        logout,
+        refreshUser,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
