@@ -83,14 +83,15 @@ export default function LoginScreen() {
           <Text style={styles.subtitle}>Sign in to continue</Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Enter your username"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
               placeholderTextColor="#666"
               autoCapitalize="none"
+              keyboardType="email-address"
               editable={!loading}
             />
           </View>
@@ -118,6 +119,30 @@ export default function LoginScreen() {
             ) : (
               <Text style={styles.buttonText}>Sign In</Text>
             )}
+          </TouchableOpacity>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.socialButton, styles.googleButton, loading && styles.buttonDisabled]}
+            onPress={handleGoogleLogin}
+            disabled={loading}
+          >
+            <Ionicons name="logo-google" size={20} color="#FFF" />
+            <Text style={styles.socialButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.socialButton, styles.githubButton, loading && styles.buttonDisabled]}
+            onPress={handleGitHubLogin}
+            disabled={loading}
+          >
+            <Ionicons name="logo-github" size={20} color="#FFF" />
+            <Text style={styles.socialButtonText}>Continue with GitHub</Text>
           </TouchableOpacity>
 
           <View style={styles.footer}>
